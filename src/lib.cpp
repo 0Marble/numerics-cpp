@@ -59,23 +59,23 @@ std::variant<float, Error> SecantMethodRootFinder::root(const Function& f,
   }
 }
 
-SimpsonMethodIntegrator::SimpsonMethodIntegrator(uint32_t start_node_count)
-    : start_node_count(start_node_count) {}
+SimpsonMethodIntegrator::SimpsonMethodIntegrator() {}
 
 float SimpsonMethodIntegrator::integrate_step(
     const Function& f, float from, float to, uint32_t& n,
     std::vector<float>& computed_points) const {
-  if (computed_points.size() < start_node_count + 1) {
-    float step = (to - from) / float(start_node_count);
-    computed_points.reserve(start_node_count + 1);
+  if (computed_points.size() < 3) {
+    float step = (to - from) / 3.0;
+    computed_points.reserve(3);
 
     computed_points.push_back(f(from));
-    for (uint32_t i = 1; i < start_node_count; i++) {
-      computed_points.push_back(f(i * step + from));
-    }
     computed_points.push_back(f(to));
+    computed_points.push_back(f((to + from) / 2.0));
 
-    n = start_node_count;
+    n = 2;
+    return (2.0 * computed_points[0] + 2.0 * computed_points[1] +
+            4.0 * computed_points[2]) *
+           (to - from) / 6.0;
   }
 
   float sum = 0.0;
@@ -84,7 +84,6 @@ float SimpsonMethodIntegrator::integrate_step(
   for (uint32_t i = 0; i < n; i++) {
     float x = step * (float(i) + 0.5) + from;
     float y = f(x);
-    // std::cout << x << " " << y << "\n";
     computed_points.push_back(y);
     sum += 4.0 * y;
   }
@@ -96,7 +95,6 @@ float SimpsonMethodIntegrator::integrate_step(
   sum += computed_points[0] + computed_points[n];
   n += n;
   float new_step = (to - from) / float(n);
-  //   std::cout << "Count " << n << " " << new_step << "\n";
   return sum * new_step / 3.0;
 }
 
@@ -111,7 +109,6 @@ float SimpsonMethodIntegrator::integrate(const Function& f, float from,
       return cur_int;
     }
     prev_int = cur_int;
-    // std::cout << cur_int << "\n";
   }
 }
 

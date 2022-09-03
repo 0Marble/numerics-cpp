@@ -11,12 +11,8 @@ class Integrator {
 };
 
 class SimpsonMethodIntegrator : public Integrator {
- private:
-  uint32_t start_node_count;
-
  public:
-  SimpsonMethodIntegrator() = delete;
-  SimpsonMethodIntegrator(uint32_t start_node_count);
+  SimpsonMethodIntegrator();
   virtual float integrate(const Function& f, float from, float to,
                           float eps) const override;
   float integrate_step(const Function& f, float from, float to, uint32_t& n,
